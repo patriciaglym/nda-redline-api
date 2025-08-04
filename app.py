@@ -40,7 +40,7 @@ def compare_nda():
 
     return send_file(filepath, as_attachment=True, download_name="Redlined NDA.docx")
 
-# ✅ Required for Render to pick the port
+# ✅ Required for Render to pick the correct port
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
