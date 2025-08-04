@@ -30,9 +30,13 @@ def compare_nda():
         if line.strip():
             redlined.add_paragraph(line)
 
-    temp = tempfile.NamedTemporaryFile(delete=False, suffix=".docx")
-    redlined.save(temp.name)
-    return send_file(temp.name, as_attachment=True)
+import uuid
+
+filename = f"redlined_{uuid.uuid4().hex}.docx"
+filepath = os.path.join("/tmp", filename)
+redlined.save(filepath)
+
+return send_file(filepath, as_attachment=True, download_name="Redlined NDA.docx")
 
 # ✅ This tells Render which port to use
 if __name__ == '__main__':
