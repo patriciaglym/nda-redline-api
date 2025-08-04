@@ -2,6 +2,7 @@ from flask import Flask, request, send_file
 from docx import Document
 import difflib
 import tempfile
+import os
 
 app = Flask(__name__)
 
@@ -32,3 +33,8 @@ def compare_nda():
     temp = tempfile.NamedTemporaryFile(delete=False, suffix=".docx")
     redlined.save(temp.name)
     return send_file(temp.name, as_attachment=True)
+
+# ✅ This tells Render which port to use
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
