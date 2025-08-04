@@ -34,13 +34,19 @@ def compare_nda():
         if line.strip():
             redlined.add_paragraph(line)
 
+    # 🔒 Save file to /tmp so Render allows it
     filename = f"redlined_{uuid.uuid4().hex}.docx"
     filepath = os.path.join("/tmp", filename)
     redlined.save(filepath)
 
-    return send_file(filepath, as_attachment=True, download_name="Redlined NDA.docx")
+    # ✅ Set correct MIME type and force download name
+    return send_file(
+        filepath,
+        as_attachment=True,
+        download_name="Redlined NDA.docx",
+        mimetype='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    )
 
-# ✅ Required for Render to pick the correct port
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
