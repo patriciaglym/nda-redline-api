@@ -1,7 +1,7 @@
 from flask import Flask, request, send_file
 from docx import Document
 import difflib
-import tempfile
+import uuid
 import os
 
 app = Flask(__name__)
@@ -22,7 +22,11 @@ def compare_nda():
     t_text = get_text(file1)
     c_text = get_text(file2)
 
-    diff = difflib.HtmlDiff().make_file(t_text, c_text, fromdesc='Template NDA', todesc='Counterparty NDA')
+    diff = difflib.HtmlDiff().make_file(
+        t_text, c_text,
+        fromdesc='Template NDA',
+        todesc='Counterparty NDA'
+    )
 
     redlined = Document()
     redlined.add_paragraph("Redlined NDA Comparison")
@@ -30,15 +34,13 @@ def compare_nda():
         if line.strip():
             redlined.add_paragraph(line)
 
-import uuid
+    filename = f"redlined_{uuid.uuid4().hex}.docx"
+    filepath = os.path.join("/tmp", filename)
+    redlined.save(filepath)
 
-filename = f"redlined_{uuid.uuid4().hex}.docx"
-filepath = os.path.join("/tmp", filename)
-redlined.save(filepath)
+    return send_file(filepath, as_attachment=True, download_name="Redlined NDA.docx")
 
-return send_file(filepath, as_attachment=True, download_name="Redlined NDA.docx")
-
-# ✅ This tells Render which port to use
+# ✅ Required for Render to pick the port
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port)
